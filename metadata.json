@@ -1,0 +1,6 @@
+{
+  "name": "Vicinity",
+  "description": "Real-time GPS proximity social platform for connecting with friends nearby.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": []
+}

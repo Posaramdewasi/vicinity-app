@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: vicinity-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-vicinity}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password123}
+      POSTGRES_DB: ${DATABASE_NAME:-vicinity_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: vicinity-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: vicinity-api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://${DATABASE_USER:-vicinity}:${DATABASE_PASSWORD:-password123}@postgres:5432/${DATABASE_NAME:-vicinity_db}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  pgdata:
